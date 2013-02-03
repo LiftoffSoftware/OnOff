@@ -5,7 +5,8 @@ chai.should()
 describe('The event manager', function(){
 
     describe('itself', function(){
-        var em, newEm;
+        var em, newEm,
+            methods = ['on', 'off', 'trigger', 'once'];
 
         beforeEach(function(){
             em = OnOff();
@@ -18,7 +19,6 @@ describe('The event manager', function(){
         });
 
         it('should publish all of its methods', function(){
-            var methods = ['on', 'off', 'trigger', 'once'];
             methods.forEach(function(m){
                 em.should.respondTo(m);
                 newEm.should.respondTo(m);
@@ -112,6 +112,20 @@ describe('The event manager', function(){
                 done();
             })
             em.trigger('event', arg1, arg2);
+        });
+
+        it('allow removing handlers during triggering', function(){
+            var first, second, third, fourth;
+            first = second = third = fourth = false;
+            em.on('event1', function(){ first = true; });
+            em.on('event2', function(){ second = true; em.off('event3'); });
+            em.on('event3', function(){ third = true; });
+            em.on('event4', function(){ fourth = true; });
+            em.trigger('event1 event2 event3 event4');
+            first.should.be.true;
+            second.should.be.true;
+            third.should.be.false;
+            fourth.should.be.true;
         });
 
     });
