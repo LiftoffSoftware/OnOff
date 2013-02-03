@@ -35,15 +35,17 @@ OnOff.on
 
     Adds the given *callback* / *context* combination to the given *events*; to be called when the given *events* are triggered.
 
-        :events (string): A space-separated list of events that will have the given *callback* / *context* attached.
-        :callback (function): The function to be called when the given *event* is triggered.
-        :context (object): An object that will be bound to *callback* as `this` when it is called.
-        :times (integer): The number of times this callback will be called before it is removed from the given *event*.
-
     Example::
 
         > EventManager = OnOff();
         > EventManager.on("app:some_event", someFunction);
+
+Arguments
+^^^^^^^^^
+**events** *(string)*: A space-separated list of events that will have the given *callback* / *context* attached.
+**callback** *(function)*: The function to be called when the given *event* is triggered.
+**context** *(object)*: An object that will be bound to *callback* as `this` when it is called.
+**times** *(integer)*: The number of times this callback will be called before it is removed from the given *event*.
 
 OnOff.off
 ---------
