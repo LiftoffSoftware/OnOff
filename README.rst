@@ -43,12 +43,15 @@ OnOff.on
 Arguments
 ^^^^^^^^^
 
-+--------------------------------------------------------------------------------------------------------------------+
-|**events** *(string)*: A space-separated list of events that will have the given *callback* / *context* attached.   |
-|**callback** *(function)*: The function to be called when the given *event* is triggered.                           |
-|**context** *(object)*: An object that will be bound to *callback* as `this` when it is called.                     |
-|**times** *(integer)*: The number of times this callback will be called before it is removed from the given *event*.|
-+--------------------------------------------------------------------------------------------------------------------+
++-------------------------+----------------------------------------------------------------------------------------------+
+|**events** *(string)*    |A space-separated list of events that will have the given *callback* / *context* attached.    |
++-------------------------+----------------------------------------------------------------------------------------------+
+|**callback** *(function)*|The function to be called when the given *event* is triggered.                                |
++-------------------------+----------------------------------------------------------------------------------------------+
+|**context** *(object)*   |An object that will be bound to *callback* as `this` when it is called.                       |
++-------------------------+----------------------------------------------------------------------------------------------+
+|**times** *(integer)*    | The number of times this callback will be called before it is removed from the given *event*.|
++-------------------------+----------------------------------------------------------------------------------------------+
 
 OnOff.off
 ---------
