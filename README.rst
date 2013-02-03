@@ -42,8 +42,9 @@ Then you can:
 
 .. code:: bash
 
-    make tests      # Execute the test suite
-    make build      # Produce the minified script
+    make tests        # Execute the test suite
+    make watch-tests  # Execute the tests on every file change
+    make build        # Produce the minified script
 
 
 Code Documentation
