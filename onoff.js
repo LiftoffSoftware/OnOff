@@ -29,6 +29,7 @@ var OnOff = function() {
     if (!(this instanceof OnOff)) {return new OnOff();}
     var self = this; // Explicit is better than implicit.
     self.callbacks = {};
+
     self.on = function(events, callback, context, times) {
         /**:OnOff.on(events, callback, context, times)
 
@@ -73,7 +74,7 @@ var OnOff = function() {
             }
             callList.push(callObj);
         });
-        return this;
+        return self;
     }
     self.off = function(events, callback, context) {
         /**:OnOff off(events, callback, context)
@@ -92,7 +93,7 @@ var OnOff = function() {
         */
         if (events === undefined) {
             self.callbacks = {}; // Clear all events/callbacks
-            return this;
+            return self;
         }
         events.split(/\s+/).forEach(function(event) {
             var callList = self.callbacks[event];
@@ -109,7 +110,7 @@ var OnOff = function() {
                 });
             }
         });
-        return this;
+        return self;
     }
     self.once = function(events, callback, context) {
         /**:OnOff.once(events, callback, context)
@@ -117,6 +118,7 @@ var OnOff = function() {
         A shortcut that performs the equivalent of `OnOff.on(events, callback, context, 1)`
         */
         self.on(events, callback, context, 1);
+        return self;
     }
     self.trigger = function(events) {
         /**:OnOff.trigger(events)
@@ -145,7 +147,7 @@ var OnOff = function() {
                 });
             }
         });
-        return this;
+        return self;
     }
 }
 

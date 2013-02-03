@@ -24,6 +24,15 @@ describe('The event manager', function(){
                 newEm.should.respondTo(m);
             });
         });
+
+        it('should support chaining for all its methods', function(){
+            var nop = function(){};
+            em.on('event', nop)
+                .once('event', nop)
+                .trigger('event')
+                .off()
+                .trigger('event');
+        });
     });
 
     describe('should', function(){
