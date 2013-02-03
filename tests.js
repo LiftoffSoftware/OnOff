@@ -4,52 +4,59 @@ chai.should()
 
 describe('The event manager', function(){
 
-    describe('itself', function(){
-        var em, newEm,
-            methods = ['on', 'off', 'trigger', 'once'];
+    var em, newEm,
+        methods = ['on', 'off', 'trigger', 'once'];
 
-        beforeEach(function(){
-            em = OnOff();
-            newEm = new OnOff();
-        })
+    beforeEach(function(){
+        em = OnOff();
+        newEm = new OnOff();
+    })
 
-        it('should be constructable with or without `new`', function(){
-            em.should.be.an.instanceOf(OnOff);
-            newEm.should.be.an.instanceOf(OnOff);
-        });
+    it('should be constructable with or without `new`', function(){
+        em.should.be.an.instanceOf(OnOff);
+        newEm.should.be.an.instanceOf(OnOff);
+    });
 
-        it('should publish all of its methods', function(){
-            methods.forEach(function(m){
-                em.should.respondTo(m);
-                newEm.should.respondTo(m);
-            });
-        });
-
-        it('should support chaining for all its methods', function(){
-            var nop = function(){};
-            em.on('event', nop)
-                .once('event', nop)
-                .trigger('event')
-                .off()
-                .trigger('event');
+    it('should publish all of its methods', function(){
+        methods.forEach(function(m){
+            em.should.respondTo(m);
+            newEm.should.respondTo(m);
         });
     });
 
-    describe('should', function(){
-        var em;
+    it('should support chaining for all its methods', function(){
+        var nop = function(){};
 
-        beforeEach(function(){
-            em = new OnOff();
+        em.on('event', nop).once('event', nop).trigger('event')
+            .off().trigger('event');
+        newEm.on('event', nop).once('event', nop).trigger('event')
+            .off().trigger('event');
+    });
+});
+
+
+
+describe('An event manager instance', function(){
+    var em;
+
+    beforeEach(function(){
+        em = new OnOff();
+    });
+
+
+
+    it('should allow listening and triggering of events', function(done){
+        em.on('myevent', function(){
+            done();
         });
+        em.trigger('myevent');
+    });
 
-        it('allow listening and triggering of events', function(done){
-            em.on('myevent', function(){
-                done();
-            });
-            em.trigger('myevent');
-        });
 
-        it('allow registering listeners with complex names', function(){
+
+    describe('should allow listening', function(){
+
+        it('to events with complex names', function(){
             var callCount = 0,
                 events = 'event event.scoped namespaced:event a-strange-event';
             em.on(events, function(){ callCount++; })
@@ -57,7 +64,7 @@ describe('The event manager', function(){
             callCount.should.equal(events.split(' ').length);
         });
 
-        it('allow listening the same event multiple times', function(){
+        it('to the same event multiple times', function(){
             var first = false, second = false;
             em.on('event', function(){ first = true; });
             em.on('event', function(){ second = true; });
@@ -66,39 +73,7 @@ describe('The event manager', function(){
             second.should.be.true;
         });
 
-        it('allow triggering multiple events', function(){
-            var first, second;
-            em.on('event1', function(){ first = true; });
-            em.on('event2', function(){ second = true; });
-            em.trigger('event1 event2');
-            first.should.be.true;
-            second.should.be.true;
-        });
-
-        describe('allow unregistering handlers', function(){
-            it('globally', function(){
-                var callCount = 0;
-                em.on('event', function(){ callCount++; });
-                em.trigger('event');
-                em.off();
-                em.trigger('event');
-                callCount.should.equal(1);
-            });
-            it('by name', function(){
-                var firstCallCount = 0,
-                    secondCallCount = 0;
-                em.on('event', function(){ firstCallCount++; });
-                em.on('event', function(){ firstCallCount++; });
-                em.on('other-event', function(){ secondCallCount++; });
-                em.trigger('event other-event');
-                em.off('event');
-                em.trigger('event other-event');
-                firstCallCount.should.equal(2);
-                secondCallCount.should.equal(2);
-            });
-        });
-
-        it('allow timed listeners', function(){
+        it('with a maximum trigger count', function(){
             var callCount = 0, maxTimes = 2;
             em.on('event', function(){ callCount++; }, null, maxTimes);
             for (var i=0; i<maxTimes+1; i++) {
@@ -107,7 +82,7 @@ describe('The event manager', function(){
             callCount.should.equal(maxTimes);
         });
 
-        it('allow one-shot listeners', function(){
+        it('with the one-shot shortcut', function(){
             var callCount = 0;
             em.once('event', function(){ callCount++; });
             em.trigger('event');
@@ -115,14 +90,7 @@ describe('The event manager', function(){
             callCount.should.equal(1);
         });
 
-        it('handle multiple triggering without surprises', function(){
-            var callCount = 0;
-            em.on('event', function(){ callCount++; }, null, 2);
-            em.trigger('event event event');
-            callCount.should.equal(2);
-        });
-
-        it('allow binding listener handlers with contexts', function(done){
+        it('while respecting custom contexts', function(done){
             var ctx = {};
             em.on('event', function(){
                 this.should.equal(ctx);
@@ -131,7 +99,29 @@ describe('The event manager', function(){
             em.trigger('event');
         });
 
-        it('allow passing arguments when triggering', function(done){
+    });
+
+
+
+    describe('should allow triggering', function(){
+
+        it('to multiple events at the same time', function(){
+            var first, second;
+            em.on('event1', function(){ first = true; });
+            em.on('event2', function(){ second = true; });
+            em.trigger('event1 event2');
+            first.should.be.true;
+            second.should.be.true;
+        });
+
+        it('to multiple events as separate triggers', function(){
+            var callCount = 0;
+            em.on('event', function(){ callCount++; }, null, 2);
+            em.trigger('event event event');
+            callCount.should.equal(2);
+        });
+
+        it('while passing arguments to the handler', function(done){
             var arg1 = {}, arg2 = {};
             em.on('event', function(a1, a2){
                 a1.should.equal(arg1);
@@ -141,7 +131,45 @@ describe('The event manager', function(){
             em.trigger('event', arg1, arg2);
         });
 
-        it('allow removing handlers during triggering', function(){
+        it('inside a timed listener handler', function(){
+            var callCount = 0;
+            em.on('event', function(){
+                callCount++;
+                em.trigger('event');
+            }, null, 2)
+            em.trigger('event');
+            callCount.should.equal(2);
+        })
+
+    });
+
+
+
+    describe('should allow unregistering handlers', function(){
+
+        it('globally', function(){
+            var callCount = 0;
+            em.on('event', function(){ callCount++; });
+            em.trigger('event');
+            em.off();
+            em.trigger('event');
+            callCount.should.equal(1);
+        });
+
+        it('by name', function(){
+            var firstCallCount = 0,
+                secondCallCount = 0;
+            em.on('event', function(){ firstCallCount++; });
+            em.on('event', function(){ firstCallCount++; });
+            em.on('other-event', function(){ secondCallCount++; });
+            em.trigger('event other-event');
+            em.off('event');
+            em.trigger('event other-event');
+            firstCallCount.should.equal(2);
+            secondCallCount.should.equal(2);
+        });
+
+        it('during triggering', function(){
             var first, second, third, fourth;
             first = second = third = fourth = false;
             em.on('event1', function(){ first = true; });
@@ -154,16 +182,6 @@ describe('The event manager', function(){
             third.should.be.false;
             fourth.should.be.true;
         });
-
-        it('not allow timed functions to be triggered indefinitely when nested', function(){
-            var callCount = 0;
-            em.on('event', function(){
-                callCount++;
-                em.trigger('event');
-            }, null, 2)
-            em.trigger('event');
-            callCount.should.equal(2);
-        })
 
     });
 
