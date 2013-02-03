@@ -137,6 +137,16 @@ describe('The event manager', function(){
             fourth.should.be.true;
         });
 
+        it('not allow timed functions to be triggered indefinitely when nested', function(){
+            var callCount = 0;
+            em.on('event', function(){
+                callCount++;
+                em.trigger('event');
+            }, null, 2)
+            em.trigger('event');
+            callCount.should.equal(2);
+        })
+
     });
 
 });

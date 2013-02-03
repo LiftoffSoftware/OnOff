@@ -137,13 +137,13 @@ var OnOff = function() {
             var callList = self.callbacks[event];
             if (callList) {
                 callList.forEach(function(callObj) {
-                    callObj.callback.apply(callObj.context || this, args);
                     if (callObj.times) {
                         callObj.times -= 1;
                         if (callObj.times == 0) {
                             self.off(events, callObj.callback, callObj.context);
                         }
                     }
+                    callObj.callback.apply(callObj.context || this, args);
                 });
             }
         });
