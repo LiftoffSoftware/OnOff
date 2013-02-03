@@ -24,50 +24,51 @@ Examples::
     > EventManager.trigger("test_event", 'an argument');
     args: an argument, this.foo: bar
 
-.. note:: Each instance of `OnOff` maintains its own list of events and callbacks so there shouldn't be conflicts when two libraries happen to use it.
+**NOTE:** Each instance of `OnOff` maintains its own list of events and callbacks so there shouldn't be conflicts when two libraries happen to use it.
 
 Code Documentation
 ==================
 
 OnOff.on
 --------
-`OnOff.on(events, callback, context, times)`
+`OnOff.on(events, callback[, context[, times]])`
 
-    Adds the given *callback* / *context* combination to the given *events*; to be called when the given *events* are triggered.
+    Adds the given *callback* / *context* (optional) combination to the given *events*; to be called when the given *events* are triggered.
 
     Example::
 
         > EventManager = OnOff();
         > EventManager.on("app:some_event", someFunction);
 
-Arguments
-^^^^^^^^^
-
-+-------------------------+----------------------------------------------------------------------------------------------+
-|**events** *(string)*    |A space-separated list of events that will have the given *callback* / *context* attached.    |
-+-------------------------+----------------------------------------------------------------------------------------------+
-|**callback** *(function)*|The function to be called when the given *event* is triggered.                                |
-+-------------------------+----------------------------------------------------------------------------------------------+
-|**context** *(object)*   |An object that will be bound to *callback* as `this` when it is called.                       |
-+-------------------------+----------------------------------------------------------------------------------------------+
-|**times** *(integer)*    | The number of times this callback will be called before it is removed from the given *event*.|
-+-------------------------+----------------------------------------------------------------------------------------------+
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**events** *(string)*    |A space-separated list of events that will have the given *callback* / *context* attached.    |
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**callback** *(function)*|The function to be called when the given *event* is triggered.                                |
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**context** *(object)*   |An object that will be bound to *callback* as `this` when it is called.                       |
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**times** *(integer)*    |The number of times this callback will be called before it is removed from the given *event*. |
+    +-------------------------+----------------------------------------------------------------------------------------------+
 
 OnOff.off
 ---------
-`OnOff.off(events, callback, context)`
+`OnOff.off(events[, callback[, context]])`
 
-    Removes the given *callback* / *context* combination from the given *events*
-
-        :param string events: A space-separated list of events.
-        :param function callback: The function that's attached to the given events to be removed.
-        :param object context: The context attached to the given event/callback to be removed.
+    Removes the given *callback* / *context* combination from the given *events*.  If no callback is given *all* events will be removed.
 
     Example::
 
         > EventManager.off("app:some_event", someFunction);
         > // Or to clear *all* events in one go:
         > EventManager.off();
+
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**events** *(string)*    |A space-separated list of events that will have the given *callback* / *context* attached.    |
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**callback** *(function)*|The function to be called when the given *event* is triggered.                                |
+    +-------------------------+----------------------------------------------------------------------------------------------+
+    |**context** *(object)*   |An object that will be bound to *callback* as `this` when it is called.                       |
+    +-------------------------+----------------------------------------------------------------------------------------------+
 
 OnOff.once
 ----------
@@ -83,12 +84,16 @@ OnOff.trigger
 
     Triggers the given *events*.  Any additional provided arguments will be passed to the callbacks attached to the given events.
 
-        :param string events: A space-separated list of events to trigger
+    Example::
 
-        Example::
+        > // The '1' below will be passed to each callback as the only argument
+        > EventManager.trigger("your_app:some_event", 1);
 
-            > // The '1' below will be passed to each callback as the only argument
-            > EventManager.trigger("your_app:some_event", 1);
+    +--------------------------+--------------------------------------------------------------------------------------+
+    |**events** *(string)*     |A space-separated list of events to trigger.                                          |
+    +--------------------------+--------------------------------------------------------------------------------------+
+    |**arguments** *(function)*|Additional arguments will be passed to the callback(s) attached to the given event(s).|
+    +--------------------------+--------------------------------------------------------------------------------------+
 
 OnOff.callbacks
 ---------------
