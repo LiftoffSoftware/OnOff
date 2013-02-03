@@ -27,6 +27,25 @@ OnOff is a tiny JavaScript library that provides `on()`, `off()`, and `trigger()
 
 **NOTE:** Each instance of `OnOff` maintains its own list of events and callbacks so there shouldn't be conflicts when two libraries happen to use it.
 
+
+Building and testing
+====================
+You may build and test OnOff using the included Makefile.
+
+Make sure you install the development dependencies, first:
+
+.. code:: bash
+
+    npm install mocha chai uglify-js
+
+Then you can:
+
+.. code:: bash
+
+    make tests      # Execute the test suite
+    make build      # Produce the minified script
+
+
 Code Documentation
 ==================
 
