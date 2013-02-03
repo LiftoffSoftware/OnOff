@@ -1,11 +1,12 @@
 OnOff
 =====
 **Author:** Dan McDougall (daniel.mcdougall@liftoffsoftware.com).
+
 **License:**  Apache 2.0 (see LICENSE.txt)
 
-OnOff is a tiny JavaScript library that provides `on()`, `off()`, and `trigger()` event management functions.  A convenient `once()` function is also provided for events that should only be called one time.
+OnOff is a tiny JavaScript library that provides `on()`, `off()`, and `trigger()` event management functions.  A convenient `once()` function is also provided for events that should only be called one time.  Examples:
 
-Examples::
+.. code:: javascript
 
     > // Create an instance of OnOff()
     > EventManager = new OnOff(); // NOTE: "new" is actually optional
@@ -35,7 +36,7 @@ OnOff.on
 
     Adds the given *callback* / *context* (optional) combination to the given *events*; to be called when the given *events* are triggered.
 
-    Example::
+    .. code:: javascript
 
         > EventManager = OnOff();
         > EventManager.on("app:some_event", someFunction);
@@ -56,7 +57,7 @@ OnOff.off
 
     Removes the given *callback* / *context* combination from the given *events*.  If no callback is given *all* events will be removed.
 
-    Example::
+    .. code:: javascript
 
         > EventManager.off("app:some_event", someFunction);
         > // Or to clear *all* events in one go:
@@ -84,7 +85,7 @@ OnOff.trigger
 
     Triggers the given *events*.  Any additional provided arguments will be passed to the callbacks attached to the given events.
 
-    Example::
+    .. code:: javascript
 
         > // The '1' below will be passed to each callback as the only argument
         > EventManager.trigger("your_app:some_event", 1);
