@@ -49,6 +49,23 @@ describe('The event manager', function(){
             em.trigger('myevent');
         });
 
+        it('allow registering listeners with complex names', function(){
+            var callCount = 0,
+                events = 'event event.scoped namespaced:event a-strange-event';
+            em.on(events, function(){ callCount++; })
+            em.trigger(events);
+            callCount.should.equal(events.split(' ').length);
+        });
+
+        it('allow listening the same event multiple times', function(){
+            var first = false, second = false;
+            em.on('event', function(){ first = true; });
+            em.on('event', function(){ second = true; });
+            em.trigger('event');
+            first.should.be.true;
+            second.should.be.true;
+        });
+
         it('allow triggering multiple events', function(){
             var first, second;
             em.on('event1', function(){ first = true; });
@@ -70,12 +87,13 @@ describe('The event manager', function(){
             it('by name', function(){
                 var firstCallCount = 0,
                     secondCallCount = 0;
-                em.on('event1', function(){ firstCallCount++; });
-                em.on('event2', function(){ secondCallCount++; });
-                em.trigger('event1 event2');
-                em.off('event1');
-                em.trigger('event1 event2');
-                firstCallCount.should.equal(1);
+                em.on('event', function(){ firstCallCount++; });
+                em.on('event', function(){ firstCallCount++; });
+                em.on('other-event', function(){ secondCallCount++; });
+                em.trigger('event other-event');
+                em.off('event');
+                em.trigger('event other-event');
+                firstCallCount.should.equal(2);
                 secondCallCount.should.equal(2);
             });
         });
