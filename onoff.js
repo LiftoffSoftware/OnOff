@@ -80,7 +80,7 @@ var OnOff = function() {
             }
             callList.push(callObj);
         });
-        return this;
+        return self;
     }
     self.off = function(events, callback, context) {
         /**:OnOff off(events, callback, context)
@@ -126,7 +126,7 @@ var OnOff = function() {
                 self._events[event] = newList;
             }
         }
-        return this;
+        return self;
     }
     self.once = function(events, callback, context) {
         /**:OnOff.once(events, callback, context)
@@ -134,6 +134,7 @@ var OnOff = function() {
         A shortcut that performs the equivalent of `OnOff.on(events, callback, context, 1)`
         */
         self.on(events, callback, context, 1);
+        return self;
     }
     self.trigger = function(events) {
         /**:OnOff.trigger(events)
@@ -152,16 +153,20 @@ var OnOff = function() {
             var callList = self._events[event];
             if (callList) {
                 callList.forEach(function(callObj) {
-                    callObj.callback.apply(callObj.context || this, args);
                     if (callObj.times) {
                         callObj.times -= 1;
                         if (callObj.times == 0) {
                             self.off(events, callObj.callback, callObj.context);
                         }
                     }
+                    callObj.callback.apply(callObj.context || this, args);
                 });
             }
         });
-        return this;
+        return self;
     }
+}
+
+if (typeof module !== 'undefined' && 'exports' in module) {
+    module.exports = OnOff;
 }
