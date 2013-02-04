@@ -3,22 +3,18 @@ help:
 	@echo "  build:       produce the minified version of the script"
 	@echo "  tests:       execute the tests in the suite"
 	@echo "  watch-tests: execute the tests on every file change"
+	@echo "Tip: If getting errors about missing modules you may need to set NODE_PATH..."
+	@echo "  export NODE_PATH=/usr/lib/node_modules/ # Make sure path is correct"
 
 build:
-	./node_modules/.bin/uglifyjs \
-		--mangle --compress \
-		-o onoff.min.js \
-		onoff.js
+	@uglifyjs --mangle --compress -o onoff.min.js onoff.js
 
 tests:
-	@./node_modules/.bin/mocha \
-		--reporter list \
-		.
+	@mocha --reporter list .
 
 watch-tests:
-	@./node_modules/.bin/mocha \
-		--watch \
-		. \
+	@mocha \
+		--watch . \
 		|| true   # Prevent make returning error on ^C
 
 
