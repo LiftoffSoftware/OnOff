@@ -99,7 +99,7 @@ var OnOff = function() {
             > // A bit more interesting...  Clear all events with a given context:
             > EventManager.off(null, null, someContext);
         */
-        var eventList, name, l, i, n;
+        var eventList, i, n;
         if (!arguments.length) {
             self._events = {}; // Clear all events/callbacks
         } else {
