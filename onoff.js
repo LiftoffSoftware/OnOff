@@ -1,5 +1,5 @@
 /* ===================================================
- * onoff.js v1.0.0
+ * onoff.js v1.0.1
  * https://github.com/LiftoffSoftware/OnOff
  * http://liftoffsoftware.com/
  * ===================================================
@@ -27,8 +27,15 @@ var OnOff = function() {
     .. note:: A convenient `once()` function is also provided for events that should only be called one time.
     */
     if (!(this instanceof OnOff)) {return new OnOff();}
-    var self = this; // Explicit is better than implicit.
-    self.callbacks = {};
+    var self = this, // Explicit is better than implicit.
+        keys = function (dict) {
+            var keyList = [];
+            for(var i in dict) if (dict.hasOwnProperty(i)) {
+                keyList.push(i);
+            }
+            return keyList;
+        };
+    self._events = {};
     self.on = function(events, callback, context, times) {
         /**:OnOff.on(events, callback, context, times)
 
@@ -61,7 +68,7 @@ var OnOff = function() {
         .. note:: Each instance of `OnOff` maintains its own list of events and callbacks so there shouldn't be conflicts when two libraries happen to use it.
         */
         events.split(/\s+/).forEach(function(event) {
-            var callList = self.callbacks[event],
+            var callList = self._events[event],
                 callObj = {
                     callback: callback,
                     context: context,
@@ -69,7 +76,7 @@ var OnOff = function() {
                 };
             if (!callList) {
                 // Initialize the callback list for this event
-                callList = self.callbacks[event] = [];
+                callList = self._events[event] = [];
             }
             callList.push(callObj);
         });
@@ -89,26 +96,36 @@ var OnOff = function() {
             > EventManager.off("your_event", someFunction);
             > // Or to clear *all* events in one go:
             > EventManager.off();
+            > // A bit more interesting...  Clear all events with a given context:
+            > EventManager.off(null, null, someContext);
         */
-        if (events === undefined) {
-            self.callbacks = {}; // Clear all events/callbacks
-            return this;
-        }
-        events.split(/\s+/).forEach(function(event) {
-            var callList = self.callbacks[event];
-            if (!callback && callList) {
-                // Clear all callbacks for this event
-                delete self.callbacks[event];
-            } else if (callback && callList) {
-                callList.forEach(function(callObj) {
-                    if (callObj.callback == callback) {
-                        if (context === undefined || callObj.context == context) {
-                            delete self.callbacks[event];
+        var eventList, name, l, i, n;
+        if (!arguments.length) {
+            self._events = {}; // Clear all events/callbacks
+        } else {
+            eventList = events ? events.split(/\s+/) : keys(self._events);
+            for (i in eventList) {
+                var event = eventList[i],
+                    callList = self._events[event];
+                if (callList) { // There's a matching event
+                    var newList = [];
+                    for (n in callList) {
+                        if (callback && callList[n].callback.toString() == callback.toString()) {
+                            if (context && callList[n].context != context) {
+                                newList.push(callList[n]);
+                            } else if (context == null && callList[n].context) {
+// If the context is undefined assume the dev wants to remove all matching callbacks for this event
+// However, if the context was set to null assume they only want to match callbacks that have no context.
+                                newList.push(callList[n]);
+                            }
+                        } else if (context && callList[n].context != context) {
+                            newList.push(callList[n]);
                         }
                     }
-                });
+                }
+                self._events[event] = newList;
             }
-        });
+        }
         return this;
     }
     self.once = function(events, callback, context) {
@@ -132,7 +149,7 @@ var OnOff = function() {
         */
         var args = Array.prototype.slice.call(arguments, 1); // Everything after *events*
         events.split(/\s+/).forEach(function(event) {
-            var callList = self.callbacks[event];
+            var callList = self._events[event];
             if (callList) {
                 callList.forEach(function(callObj) {
                     callObj.callback.apply(callObj.context || this, args);
