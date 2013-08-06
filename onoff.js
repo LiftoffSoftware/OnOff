@@ -1,5 +1,5 @@
 /* ===================================================
- * onoff.js v1.0.1
+ * onoff.js v1.0.2
  * https://github.com/LiftoffSoftware/OnOff
  * http://liftoffsoftware.com/
  * ===================================================
@@ -26,15 +26,16 @@ var OnOff = function() {
 
     .. note:: A convenient `once()` function is also provided for events that should only be called one time.
     */
-    if (!(this instanceof OnOff)) {return new OnOff();}
+    if (!(this instanceof OnOff)) { return new OnOff(); }
     var self = this, // Explicit is better than implicit.
         keys = function (dict) {
             var keyList = [];
-            for(var i in dict) if (dict.hasOwnProperty(i)) {
-                keyList.push(i);
+            for (var i in dict) {
+                if (dict.hasOwnProperty(i)) { keyList.push(i); }
             }
             return keyList;
         };
+    self.__version__ = "1.0.2";
     self._events = {};
     self.on = function(events, callback, context, times) {
         /**:OnOff.on(events, callback, context, times)
@@ -109,15 +110,19 @@ var OnOff = function() {
                     callList = self._events[event];
                 if (callList) { // There's a matching event
                     var newList = [];
-                    for (n in callList) {
-                        if (callback && callList[n].callback.toString() == callback.toString()) {
-                            if (context && callList[n].context != context) {
+                    for (var n in callList) {
+                        if (callback) {
+                             if (callList[n].callback.toString() == callback.toString()) {
+                                if (context && callList[n].context != context) {
+                                    newList.push(callList[n]);
+                                } else if (context === null && callList[n].context) {
+    // If the context is undefined assume the dev wants to remove all matching callbacks for this event
+    // However, if the context was set to null assume they only want to match callbacks that have no context.
+                                    newList.push(callList[n]);
+                                }
+                             } else {
                                 newList.push(callList[n]);
-                            } else if (context == null && callList[n].context) {
-// If the context is undefined assume the dev wants to remove all matching callbacks for this event
-// However, if the context was set to null assume they only want to match callbacks that have no context.
-                                newList.push(callList[n]);
-                            }
+                             }
                         } else if (context && callList[n].context != context) {
                             newList.push(callList[n]);
                         }
@@ -156,7 +161,7 @@ var OnOff = function() {
                     if (callObj.times) {
                         callObj.times -= 1;
                         if (callObj.times == 0) {
-                            self.off(events, callObj.callback, callObj.context);
+                            self.off(event, callObj.callback, callObj.context);
                         }
                     }
                     callObj.callback.apply(callObj.context || this, args);
