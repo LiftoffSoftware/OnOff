@@ -127,8 +127,8 @@ var OnOff = function() {
                             newList.push(callList[n]);
                         }
                     }
+                    self._events[event] = newList;
                 }
-                self._events[event] = newList;
             }
         }
         return self;
